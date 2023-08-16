@@ -5,7 +5,7 @@ on:
     branches:
       - main
   pull_request:
-    branches: [master]
+    branches: [main]
     types: [opened, synchronize]
 
 jobs:
@@ -23,6 +23,13 @@ jobs:
         run: npm install  
       - name: Build
         run: npm run build:ui 
+      - name: Build Failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: Build Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Lint
         run: npm run eslint
       - name: e2e tests
@@ -35,4 +42,22 @@ jobs:
       - name: Deploy to Render
         if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
         run: |
-          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+          curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }} 
+      - name: Deploy success
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: Deployment succeeded!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  tag_release:
+    needs: [deployment_pipeline]
+    runs-on: ubuntu-20.04
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
