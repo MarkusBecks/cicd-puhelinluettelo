@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - run: env
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup Node
@@ -26,6 +27,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           command: npm run test:e2e
+          env: MONGODB_URI=${{ secrets.MONGODB_URI }}
           start: npm run start-prod
           wait-on: http://localhost:5003
       - name: Deploy to Render
