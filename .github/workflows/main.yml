@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
 
 jobs:
   deployment_pipeline:
     runs-on: ubuntu-20.04
 
     steps:
-      - run: env
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup Node
