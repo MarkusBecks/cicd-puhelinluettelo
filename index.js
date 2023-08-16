@@ -45,6 +45,8 @@ app.get('/info', (req, res, next) => {
     .catch((error) => next(error))
 })
 
+// yo
+
 app.get('/api/persons', (req, res, next) => {
   Person.find({})
     .then((persons) => {
