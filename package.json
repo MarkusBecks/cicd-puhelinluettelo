@@ -6,7 +6,7 @@
   "scripts": {
     "start-prod": "node index.js",
     "dev": "nodemon index.js",
-    "build:ui": "rm -rf build && cd puhelinluettelo && npm run build && cp -r build ../build",
+    "build:ui": "rm -rf build && cd puhelinluettelo && npm install && npm run build && cp -r build ../build",
     "eslint": "eslint './**/*.{js,jsx}'",
     "test:e2e": "cypress run",
     "test:manual": "cypress open"
